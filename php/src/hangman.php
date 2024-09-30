@@ -1,3 +1,17 @@
+<?php
+session_start();
+include("./functions_hangman.php");
+define('SOLUTION', 'palabra');
+if (!isset($_SESSION['answer'])) {
+    $_SESSION['answer'] = generateEmptyAnswer(SOLUTION, []);
+    $_SESSION['incorrect_letters'] = [];
+    $_SESSION['correct_letters'] = [];
+}
+
+$answer = $_SESSION['answer'];
+$incorrectLetters = $_SESSION['incorrect_letters'];
+$correctLetters = $_SESSION['correct_letters']; 
+?>
 <!DOCTYPE html>
 <html lang="ca">
 
@@ -22,25 +36,35 @@
 
 <body>
     <?php
-    include("./functions_hangman.php");
-    define('SOLUTION', 'palabra');
-
-    $answer = [];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $answer = generateEmptyAnswer(SOLUTION, $answer);
 
         $letter = $_POST['char'];
         $isValid = checkLetter(SOLUTION, $letter, $answer);
         printAnswer($answer);
 
         if (!$isValid) {
+            if (!in_array($letter, $incorrectLetters)) {
+                $incorrectLetters[] = $letter;
+            }
             echo "<p class=\"incorrect\">La $letter no es valida</p>";
         }else {
+            if (!in_array($letter, $correctLetters)) {
+                $correctLetters[] = $letter;
+            }
             echo "<p class=\"correct\">La $letter  es valida</p>";
         }
 
+        $_SESSION['answer'] = $answer;
+        $_SESSION['incorrect_letters'] = $incorrectLetters;
+        $_SESSION['correct_letters'] = $correctLetters;
+
         printAnswer($answer);
+
+        if (!in_array('_', $answer)) {
+            echo "<h1 class=\"correct\">¡Felicidades! Has ganado.</h1>";
+            session_destroy(); 
+        }
 
     } else {
         $answer = generateEmptyAnswer(SOLUTION, $answer);
@@ -51,6 +75,25 @@
         <input type="text" name="char" id="char" maxlength="1">
         <input type="submit" value="Enviar">
     </form>
+    <?php 
+    if (!empty($incorrectLetters)){
+        echo "<p class=\"incorrect\">";
+        foreach ($incorrectLetters as $letter) {
+            echo "<span>$letter</span>";
+        }
+        echo "</p>";
+    }
+
+    if (!empty($correctLetters)){
+        echo "<p class=\"correct\">";
+        foreach ($correctLetters as $letter) {
+            echo "<span>$letter</span>";
+        }
+        echo "</p>";
+    }
+    ?>
+
+    
 
 </body>
 
