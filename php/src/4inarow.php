@@ -1,3 +1,17 @@
+<?php
+session_start();
+include("./functions_4inarow.php");
+if(!isset($_SESSION['grid'])){
+    $_SESSION['grid'] = initGrid();
+    $_SESSION['player'] = 'player1';
+}
+
+$grid = $_SESSION['grid'];
+$col = -1;
+$player = $_SESSION['player'];
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,44 +64,55 @@
 
 <body>
     <?php
-    include("./functions_4inarow.php");
-    $player = '';
-    $col = 0;
-    
-
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        $_SESSION['player'] = ($player === 'player1')?'player2':'player1';
+
 
         if (isset($_POST['col'])) {
             $col = $_POST['col'];
         }
 
-        if (isset($_POST['player'])) {
-            $player = $_POST['player'];
+        if (isset($_SESSION['player'])) {
+            $player = $_SESSION['player'];
         }
 
-        if ($col < 0 || $col > 7 || ($player != 'player1' && $player != 'player2')) {
+        if ($col < 0 || $col > 6 || ($player != 'player1' && $player != 'player2') || isColumnFull($grid,$col)) {
             echo "<p class=\"incorrect\">Has introducido valores inválidos</p>";
-        } else {
-            $grid = initGrid();
-            ferMoviment($grid, $col, $player);
+            $_SESSION['player'] = ($player === 'player1')?'player2':'player1';
+            $player = ($player === 'player1')?'player2':'player1';
 
-            printGrid($grid);
+
+        } else {
+            
+            ferMoviment($grid, $col, $player);
+            
 
         }
 
 
-    } else {
+    }else {
+        session_destroy();
+        $player = 'player1';
         $grid = initGrid();
-
-
-        printGrid($grid);
     }
+        
+    
+    printGrid($grid);
+    if(checkFourInARow($grid)){
+        echo "<h1>Has ganado $player</h1>";
+        session_destroy() ;
+    }else{
+        echo "<p>Turno del player: $player</p>";
+    }
+
+    $_SESSION['grid'] = $grid;
+
+    
     ?>
     <form action="" method="post">
         <input type="number" name="col" id="col">
-        <label>player1<input type="radio" name="player" id="player" value="player1" checked></label>
-        <label>player2<input type="radio" name="player" id="player" value="player2"></label>
-
+        
         <input type="submit" value="Enviar">
     </form>
 
