@@ -66,7 +66,7 @@ $player = $_SESSION['player'];
     <?php
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-        $_SESSION['player'] = ($player === 'player1')?'player2':'player1';
+        
 
 
         if (isset($_POST['col'])) {
@@ -94,6 +94,7 @@ $player = $_SESSION['player'];
     }else {
         session_destroy();
         $player = 'player1';
+        $_SESSION['player'] = 'player1';
         $grid = initGrid();
     }
         
@@ -103,10 +104,12 @@ $player = $_SESSION['player'];
         echo "<h1>Has ganado $player</h1>";
         session_destroy() ;
     }else{
+        $player = ($player === 'player1')?'player2':'player1';
         echo "<p>Turno del player: $player</p>";
     }
 
     $_SESSION['grid'] = $grid;
+    $_SESSION['player'] = $player;
 
     
     ?>
