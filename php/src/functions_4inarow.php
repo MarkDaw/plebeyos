@@ -4,7 +4,7 @@ function initGrid()
     $grid = [];
     for ($i = 0; $i < 6; $i++) {
         for ($j = 0; $j < 7; $j++) {
-            $grid[$i][$j] = '';
+            $grid[$i][$j] = 'buid';
         }
     }
     return $grid;
@@ -28,7 +28,7 @@ function ferMoviment(&$grid, $col, $player)
 {
     for ($i = count($grid) - 1; $i >= 0; $i--) {
 
-        if ($grid[$i][$col] == '') {
+        if ($grid[$i][$col] == 'buid') {
             $grid[$i][$col] = $player;
             break;
         }
@@ -40,7 +40,7 @@ function isColumnFull($grid, $col) {
     $rows = count($grid);
 
     for ($i = 0; $i < $rows; $i++) {
-        if ($grid[$i][$col] === '') {
+        if ($grid[$i][$col] === 'buid') {
             return false; 
         }
     }
@@ -50,12 +50,12 @@ function isColumnFull($grid, $col) {
 
 function checkFourInARow(&$grid){
     $counter = 0;
-    $currentPlayer = '';
+    $currentPlayer = 'buid';
     foreach ($grid as $row) {
         $counter = 0;
 
         foreach ($row as $item) {
-            if($item === '') continue;
+            if($item === 'buid') continue;
 
             if($item != $currentPlayer) {
                 $currentPlayer = $item;
@@ -71,9 +71,9 @@ function checkFourInARow(&$grid){
 
     for ($j = 0; $j <  count($grid[0]); $j++) {
         $counter = 0;
-        $currentPlayer = '';
+        $currentPlayer = 'buid';
         for ($i = 0; $i <  count($grid); $i++) {
-            if ($grid[$i][$j] === '') continue;
+            if ($grid[$i][$j] === 'buid') continue;
 
             if ($grid[$i][$j] != $currentPlayer) {
                 $currentPlayer = $grid[$i][$j];
@@ -91,7 +91,7 @@ function checkFourInARow(&$grid){
     for ($i = 0; $i <  count($grid) - 3; $i++) {
         for ($j = 0; $j <  count($grid[0]) - 3; $j++) {
             $currentPlayer = $grid[$i][$j];
-            if ($currentPlayer !== '' &&
+            if ($currentPlayer !== 'buid' &&
                 $currentPlayer === $grid[$i+1][$j+1] &&
                 $currentPlayer === $grid[$i+2][$j+2] &&
                 $currentPlayer === $grid[$i+3][$j+3]) {
@@ -106,7 +106,7 @@ function checkFourInARow(&$grid){
     for ($i = 3; $i <  count($grid); $i++) {
         for ($j = 0; $j <  count($grid[0]) - 3; $j++) {
             $currentPlayer = $grid[$i][$j];
-            if ($currentPlayer !== '' &&
+            if ($currentPlayer !== 'buid' &&
                 $currentPlayer === $grid[$i-1][$j+1] &&
                 $currentPlayer === $grid[$i-2][$j+2] &&
                 $currentPlayer === $grid[$i-3][$j+3]) {
