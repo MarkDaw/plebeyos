@@ -35,3 +35,88 @@ function ferMoviment(&$grid, $col, $player)
 
     }
 }
+
+function isColumnFull($grid, $col) {
+    $rows = count($grid);
+
+    for ($i = 0; $i < $rows; $i++) {
+        if ($grid[$i][$col] === '') {
+            return false; 
+        }
+    }
+    return true;
+}
+
+
+function checkFourInARow(&$grid){
+    $counter = 0;
+    $currentPlayer = '';
+    foreach ($grid as $row) {
+        $counter = 0;
+
+        foreach ($row as $item) {
+            if($item === '') continue;
+
+            if($item != $currentPlayer) {
+                $currentPlayer = $item;
+                $counter = 1;
+            }else{
+                $counter++;
+                if($counter >= 4) return true;
+            }
+        }
+    }
+
+    
+
+    for ($j = 0; $j <  count($grid[0]); $j++) {
+        $counter = 0;
+        $currentPlayer = '';
+        for ($i = 0; $i <  count($grid); $i++) {
+            if ($grid[$i][$j] === '') continue;
+
+            if ($grid[$i][$j] != $currentPlayer) {
+                $currentPlayer = $grid[$i][$j];
+                $counter = 1;
+            } else {
+                $counter++;
+                if ($counter >= 4) return true; 
+            }
+        }
+    }
+
+    $counter = 0;
+
+
+    for ($i = 0; $i <  count($grid) - 3; $i++) {
+        for ($j = 0; $j <  count($grid[0]) - 3; $j++) {
+            $currentPlayer = $grid[$i][$j];
+            if ($currentPlayer !== '' &&
+                $currentPlayer === $grid[$i+1][$j+1] &&
+                $currentPlayer === $grid[$i+2][$j+2] &&
+                $currentPlayer === $grid[$i+3][$j+3]) {
+                return true; 
+            }
+        }
+    }
+
+    $counter = 0;
+
+
+    for ($i = 3; $i <  count($grid); $i++) {
+        for ($j = 0; $j <  count($grid[0]) - 3; $j++) {
+            $currentPlayer = $grid[$i][$j];
+            if ($currentPlayer !== '' &&
+                $currentPlayer === $grid[$i-1][$j+1] &&
+                $currentPlayer === $grid[$i-2][$j+2] &&
+                $currentPlayer === $grid[$i-3][$j+3]) {
+                return true; 
+            }
+        }
+    }
+
+    
+
+
+    return false;
+}
