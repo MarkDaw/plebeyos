@@ -1,16 +1,20 @@
 <?php
 session_start();
+if(!isset($_SESSION['user'])){
+    header('Location: login.php?action=login-failed');
+}
 include("./functions_hangman.php");
 define('SOLUTION', 'palabra');
 if (!isset($_SESSION['answer'])) {
     $_SESSION['answer'] = generateEmptyAnswer(SOLUTION, []);
     $_SESSION['incorrect_letters'] = [];
     $_SESSION['correct_letters'] = [];
+    $_SESSION['tries'] = 6;
 }
 
 $answer = $_SESSION['answer'];
 $incorrectLetters = $_SESSION['incorrect_letters'];
-$correctLetters = $_SESSION['correct_letters']; 
+$correctLetters = $_SESSION['correct_letters'];
 ?>
 <!DOCTYPE html>
 <html lang="ca">
@@ -63,12 +67,13 @@ $correctLetters = $_SESSION['correct_letters'];
 
         if (!in_array('_', $answer)) {
             echo "<h1 class=\"correct\">¡Felicidades! Has ganado.</h1>";
-            session_destroy(); 
+            $_SESSION['answer'] = generateEmptyAnswer(SOLUTION, $answer);
+            $_SESSION['incorrect_letters']  = [];
+            $_SESSION['correct_letters'] = []; 
         }
 
     } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
         if(isset($_GET["action"]) && $_GET["action"] === "restart") {
-            session_destroy();
             $answer = generateEmptyAnswer(SOLUTION, $answer);
             $incorrectLetters = [];
             $correctLetters = [];
@@ -100,6 +105,7 @@ $correctLetters = $_SESSION['correct_letters'];
     ?>
 
     <p><a href="?action=restart">Reiniciar partida</a></p>
+    <p><a href="login.php?action=login-failed">Cerrar sesión</a></p>
 
     
 

@@ -1,5 +1,8 @@
 <?php
 session_start();
+if(!isset($_SESSION['user'])){
+    header('Location: login.php?action=login-failed');
+}
 include("./functions_4inarow.php");
 if(!isset($_SESSION['grid'])){
     $_SESSION['grid'] = initGrid();
@@ -118,6 +121,7 @@ $player = $_SESSION['player'];
         
         <input type="submit" value="Enviar">
     </form>
+    <p><a href="?action=restart">Reiniciar partida</a></p>
 
 </body>
 
