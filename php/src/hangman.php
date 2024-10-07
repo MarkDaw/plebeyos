@@ -44,13 +44,13 @@ $correctLetters = $_SESSION['correct_letters'];
         printAnswer($answer);
 
         if (!$isValid) {
-            if (!in_array($letter, $incorrectLetters)) {
-                $incorrectLetters[] = $letter;
+            if (!in_array($letter, $incorrectLetters) && !in_array(strtolower($letter), $incorrectLetters)) {
+                $incorrectLetters[] = strtolower($letter);
             }
             echo "<p class=\"incorrect\">La $letter no es valida</p>";
         }else {
-            if (!in_array($letter, $correctLetters)) {
-                $correctLetters[] = $letter;
+            if (!in_array($letter, $correctLetters) && !in_array(strtolower($letter), $correctLetters)) {
+                $correctLetters[] = strtolower($letter);
             }
             echo "<p class=\"correct\">La $letter  es valida</p>";
         }
@@ -66,8 +66,14 @@ $correctLetters = $_SESSION['correct_letters'];
             session_destroy(); 
         }
 
-    } else {
-        $answer = generateEmptyAnswer(SOLUTION, $answer);
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        if(isset($_GET["action"]) && $_GET["action"] === "restart") {
+            session_destroy();
+            $answer = generateEmptyAnswer(SOLUTION, $answer);
+            $incorrectLetters = [];
+            $correctLetters = [];
+        }
+        
         printAnswer($answer);
     }
     ?>
@@ -92,6 +98,8 @@ $correctLetters = $_SESSION['correct_letters'];
         echo "</p>";
     }
     ?>
+
+    <p><a href="?action=restart">Reiniciar partida</a></p>
 
     
 

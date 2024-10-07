@@ -93,8 +93,8 @@ $player = $_SESSION['player'];
 
     }else {
         session_destroy();
-        $player = 'player1';
-        $_SESSION['player'] = 'player1';
+        $player = 'player2';
+        $_SESSION['player'] = 'player2';
         $grid = initGrid();
     }
         
