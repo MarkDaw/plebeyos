@@ -30,3 +30,9 @@ function checkLetter($solution, $letter, &$answer){
     }
     return $isValid;
 }
+
+function checkEndGame($answer, $tries){
+    if (!in_array('_', $answer)) return true;
+    
+    return ($tries === 0)?true:false;
+}

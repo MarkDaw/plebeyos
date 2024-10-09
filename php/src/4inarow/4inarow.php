@@ -1,17 +1,20 @@
 <?php
 session_start();
-if(!isset($_SESSION['user'])){
+if(!isset($_SESSION['user']) && !isset($_COOKIE['user-remember'])){
     header('Location: ../login.php?action=login-failed');
 }
 include("./functions_4inarow.php");
 if(!isset($_SESSION['grid'])){
     $_SESSION['grid'] = initGrid();
-    $_SESSION['player'] = 'player1';
+    $_SESSION['player'] = 'player2';
 }
 
 $grid = $_SESSION['grid'];
 $col = -1;
 $player = $_SESSION['player'];
+
+$userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . $_COOKIE['user-remember'] . " mediante cookie</h1>":"<h1>Sesión del usuario " . $_SESSION['user'] . "</h1>";
+
 ?>
 
 
@@ -73,7 +76,7 @@ $player = $_SESSION['player'];
 
 
         if (isset($_POST['col'])) {
-            $col = $_POST['col'];
+            $col = $_POST['col'] -1;
         }
 
         if (isset($_SESSION['player'])) {
@@ -94,21 +97,37 @@ $player = $_SESSION['player'];
         }
 
 
-    }else {
-        session_destroy();
-        $player = 'player2';
-        $_SESSION['player'] = 'player2';
-        $grid = initGrid();
+    }elseif($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+        if (isset($_GET['action']) && $_GET['action'] === 'restart') {
+            $player = 'player2';
+            $_SESSION['player'] = 'player2';
+            $grid = initGrid();
+        }
+
+        if ($grid === initGrid() && $_GET['action'] !== 'restart') {
+            echo $userLogged ;
+        }
+        
     }
         
     
     printGrid($grid);
     if(checkFourInARow($grid)){
         echo "<h1>Has ganado $player</h1>";
-        session_destroy() ;
+        $player = 'player2';
+        $_SESSION['player'] = 'player2';
+        $grid = initGrid();
     }else{
         $player = ($player === 'player1')?'player2':'player1';
         echo "<p>Turno del player: $player</p>";
+        ?>
+        <form action="" method="post">
+            <input type="number" name="col" id="col" autofocus>
+            
+            <input type="submit" value="Enviar">
+        </form>
+        <?php 
     }
 
     $_SESSION['grid'] = $grid;
@@ -116,13 +135,9 @@ $player = $_SESSION['player'];
 
     
     ?>
-    <form action="" method="post">
-        <input type="number" name="col" id="col">
-        
-        <input type="submit" value="Enviar">
-    </form>
+
     <p><a href="?action=restart">Reiniciar partida</a></p>
-    <p><a href="../login.php?action=login-failed">Cerrar sesión</a></p>
+    <p><a href="../login.php?action=login-closed">Cerrar sesión</a></p>
 
 
 </body>

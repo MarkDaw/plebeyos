@@ -1,6 +1,6 @@
 <?php
 session_start();
-if(!isset($_SESSION['user'])){
+if(!isset($_SESSION['user']) && !isset($_COOKIE['user-remember'])){
     header('Location: ../login.php?action=login-failed');
 }
 include("./functions_hangman.php");
@@ -15,6 +15,9 @@ if (!isset($_SESSION['answer'])) {
 $answer = $_SESSION['answer'];
 $incorrectLetters = $_SESSION['incorrect_letters'];
 $correctLetters = $_SESSION['correct_letters'];
+$tries = $_SESSION['tries'];
+
+$userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . $_COOKIE['user-remember'] . " mediante cookie</h1>":"<h1>Sesión del usuario " . $_SESSION['user'] . "</h1>";
 ?>
 <!DOCTYPE html>
 <html lang="ca">
@@ -51,6 +54,7 @@ $correctLetters = $_SESSION['correct_letters'];
             if (!in_array($letter, $incorrectLetters) && !in_array(strtolower($letter), $incorrectLetters)) {
                 $incorrectLetters[] = strtolower($letter);
             }
+            $tries -= 1;    
             echo "<p class=\"incorrect\">La $letter no es valida</p>";
         }else {
             if (!in_array($letter, $correctLetters) && !in_array(strtolower($letter), $correctLetters)) {
@@ -59,34 +63,38 @@ $correctLetters = $_SESSION['correct_letters'];
             echo "<p class=\"correct\">La $letter  es valida</p>";
         }
 
-        $_SESSION['answer'] = $answer;
-        $_SESSION['incorrect_letters'] = $incorrectLetters;
-        $_SESSION['correct_letters'] = $correctLetters;
+        
 
         printAnswer($answer);
 
-        if (!in_array('_', $answer)) {
-            echo "<h1 class=\"correct\">¡Felicidades! Has ganado.</h1>";
-            $_SESSION['answer'] = generateEmptyAnswer(SOLUTION, $answer);
-            $_SESSION['incorrect_letters']  = [];
-            $_SESSION['correct_letters'] = []; 
-        }
+
+        
+
+
 
     } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+        echo $userLogged;
+        
+
         if(isset($_GET["action"]) && $_GET["action"] === "restart") {
             $answer = generateEmptyAnswer(SOLUTION, $answer);
             $incorrectLetters = [];
             $correctLetters = [];
+            $tries = 6;
         }
         
         printAnswer($answer);
     }
-    ?>
-    <form method="post">
-        <input type="text" name="char" id="char" maxlength="1">
-        <input type="submit" value="Enviar">
-    </form>
-    <?php 
+    if (!checkEndGame($answer, $tries)) {
+        ?>
+        <form method="post">
+            <input type="text" name="char" id="char" maxlength="1" autofocus>
+            <input type="submit" value="Enviar">
+        </form>
+        <?php 
+    }
+    
     if (!empty($incorrectLetters)){
         echo "<p class=\"incorrect\">";
         foreach ($incorrectLetters as $letter) {
@@ -102,10 +110,26 @@ $correctLetters = $_SESSION['correct_letters'];
         }
         echo "</p>";
     }
+    
+    echo "<p>Te quedan $tries intentos</p>";
+
+    if (checkEndGame($answer, $tries)) {
+        $endMsg = ($tries === 0)? "<h1 class=\"incorrect\">Has perdido.</h1>": "<h1 class=\"correct\">Has ganado.</h1>";
+        echo $endMsg;
+        $answer = generateEmptyAnswer(SOLUTION, $answer);
+        $incorrectLetters = [];
+        $correctLetters = [];
+        $tries = 6;
+    }
+
+    $_SESSION['answer'] = $answer;
+    $_SESSION['incorrect_letters'] = $incorrectLetters;
+    $_SESSION['correct_letters'] = $correctLetters;
+    $_SESSION['tries'] = $tries;
     ?>
 
     <p><a href="?action=restart">Reiniciar partida</a></p>
-    <p><a href="../login.php?action=login-failed">Cerrar sesión</a></p>
+    <p><a href="../login.php?action=login-closed">Cerrar sesión</a></p>
 
     
 
