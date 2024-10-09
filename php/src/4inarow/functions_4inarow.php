@@ -68,6 +68,7 @@ function checkFourInARow(&$grid)
 
         foreach ($row as $item) {
             if ($item === 'buid')
+                $counter = 0;
                 continue;
 
             if ($item != $currentPlayer) {
@@ -141,7 +142,7 @@ function checkFourInARow(&$grid)
     return false;
 }
 
-function jugar(&$grid, $jugadorActual)
+function jugar($grid, $jugadorActual)
 {
     $opponent = $jugadorActual === 'player1' ? 'player2' : 'player1';
 

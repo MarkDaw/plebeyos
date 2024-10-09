@@ -6,7 +6,7 @@ if(!isset($_SESSION['user']) && !isset($_COOKIE['user-remember'])){
 include("./functions_4inarow.php");
 if(!isset($_SESSION['grid'])){
     $_SESSION['grid'] = initGrid();
-    $_SESSION['player'] = 'player2';
+    $_SESSION['player'] = 'player1';
     $_SESSION['p1-points'] = 0;
     $_SESSION['p2-points'] = 0;
 }
@@ -74,35 +74,43 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . h
     <?php
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-        
-
-
-        if (isset($_POST['col'])) {
-            $col = $_POST['col'] -1;
-        }
-
-        if (isset($_SESSION['player'])) {
-            $player = $_SESSION['player'];
-        }
-
-        if ($col < 0 || $col > 6 || ($player != 'player1' && $player != 'player2') || isColumnFull($grid,$col)) {
+        if (isset($_POST['col']) && $_POST['col'] === ''){
+            
             echo "<p class=\"incorrect\">Has introducido valores inválidos</p>";
             $player = ($player === 'player1')?'player2':'player1';
 
-
-        } else {
             
+
+        }elseif(isset($_POST['col'])){
+            
+            $col = $_POST['col'] -1;
+            
+
+            if ($col < 0 || $col > 6 || ($player != 'player1' && $player != 'player2') || isColumnFull($grid,$col)) {
+                echo "<p class=\"incorrect\">Has introducido valores inválidos</p>";
+                $player = ($player === 'player1')?'player2':'player1';
+    
+    
+            }elseif($player === 'player1') {
+                    
+                ferMoviment($grid, $col, $player);
+                
+            }
+            
+
+        
+
+        }elseif($player === 'player2'){
+            $col = jugar($grid, $player);
             ferMoviment($grid, $col, $player);
-            
-
         }
-
+        $player = ($player === 'player1')?'player2':'player1';
 
     }elseif($_SERVER['REQUEST_METHOD'] === 'GET') {
 
         if (isset($_GET['action']) && $_GET['action'] === 'restart') {
-            $player = 'player2';
-            $_SESSION['player'] = 'player2';
+            $player = 'player1';
+            $_SESSION['player'] = $player;
             $grid = initGrid();
         }
 
@@ -115,10 +123,12 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . h
     
     printGrid($grid);
     if(checkFourInARow($grid)){
-        echo "<h1>Has ganado $player</h1>";
+        $player = ($player === 'player1')?'player2':'player1';
         if($player === 'player1'){
+            echo "<h1>Has ganado jugador</h1>";
             $_SESSION['p1-points'] += 2;
         }else{
+            echo "<h1>Ha ganado la IA</h1>";
             $_SESSION['p2-points'] += 2;
         }
         $player = 'player2';
@@ -131,9 +141,9 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . h
         $_SESSION['p1-points'] += 1;
         $_SESSION['p2-points'] += 1;
         $grid = initGrid();
-    }else{
-        $player = ($player === 'player1')?'player2':'player1';
-        echo "<p>Turno del player: $player</p>";
+    }elseif($player === 'player1'){
+        
+        echo "<p>Turno del jugador</p>";
         ?>
         <form action="" method="post">
             <input type="number" name="col" id="col" autofocus>
@@ -141,12 +151,21 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . h
             <input type="submit" value="Enviar">
         </form>
         <?php 
+    }else{
+        echo "<p>Turno de la IA</p>";
+        ?>
+        <form action="" method="post">
+            <input type="submit" value="Continuar" autofocus>
+        </form>
+        <?php 
     }
+
+    
 
     $_SESSION['grid'] = $grid;
     $_SESSION['player'] = $player;
 
-    echo "<h2>Player 1: " . $_SESSION['p1-points'] . " | Player 2: " . $_SESSION['p2-points'] . "</h2>"
+    echo "<h2>Player : " . $_SESSION['p1-points'] . " | IA: " . $_SESSION['p2-points'] . "</h2>"
 
     
     ?>
