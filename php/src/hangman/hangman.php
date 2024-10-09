@@ -17,7 +17,7 @@ $incorrectLetters = $_SESSION['incorrect_letters'];
 $correctLetters = $_SESSION['correct_letters'];
 $tries = $_SESSION['tries'];
 
-$userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . $_COOKIE['user-remember'] . " mediante cookie</h1>":"<h1>Sesión del usuario " . $_SESSION['user'] . "</h1>";
+$userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . htmlspecialchars($_COOKIE['user-remember']) . " mediante cookie</h1>":"<h1>Sesión del usuario " . htmlspecialchars($_SESSION['user']) . "</h1>";
 ?>
 <!DOCTYPE html>
 <html lang="ca">

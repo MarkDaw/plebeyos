@@ -13,7 +13,7 @@ $grid = $_SESSION['grid'];
 $col = -1;
 $player = $_SESSION['player'];
 
-$userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . $_COOKIE['user-remember'] . " mediante cookie</h1>":"<h1>Sesión del usuario " . $_SESSION['user'] . "</h1>";
+$userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . htmlspecialchars($_COOKIE['user-remember']) . " mediante cookie</h1>":"<h1>Sesión del usuario " . htmlspecialchars($_SESSION['user']) . "</h1>";
 
 ?>
 
@@ -105,7 +105,7 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . $
             $grid = initGrid();
         }
 
-        if ($grid === initGrid() && $_GET['action'] !== 'restart') {
+        if ($grid === initGrid() && !isset($_GET['action'])) {
             echo $userLogged ;
         }
         
@@ -115,6 +115,11 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . $
     printGrid($grid);
     if(checkFourInARow($grid)){
         echo "<h1>Has ganado $player</h1>";
+        $player = 'player2';
+        $_SESSION['player'] = 'player2';
+        $grid = initGrid();
+    }elseif(checkIsFull($grid)){
+        echo "<h1>Empate</h1>";
         $player = 'player2';
         $_SESSION['player'] = 'player2';
         $grid = initGrid();

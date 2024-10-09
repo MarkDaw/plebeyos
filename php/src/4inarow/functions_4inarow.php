@@ -47,6 +47,14 @@ function isColumnFull($grid, $col) {
     return true;
 }
 
+function checkIsFull($grid){
+    $isFull = true;
+    foreach ($grid as $row) {
+        if(in_array('buid', $row)) $isFull = false;
+    }
+    return $isFull;
+}
+
 
 function checkFourInARow(&$grid){
     $counter = 0;

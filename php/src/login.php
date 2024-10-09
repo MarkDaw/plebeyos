@@ -1,10 +1,20 @@
 <?php 
 session_start();
+include("./functions_login.php");
+
+
+// Mapa de usuarios: en la vida real, esto estaría en una base de datos.
+$validUsers = [
+    'marc' => password_hash('1111', PASSWORD_BCRYPT),
+    'paula' => password_hash('g4to', PASSWORD_BCRYPT)
+];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if (isset($_POST['user'])) {
-        $_SESSION['user'] = $_POST['user'];
+    if (isset($_POST['user']) && isset($_POST['password'])) {
+
+        if(checkCredentials($validUsers, $_POST['user'], $_POST['password'])) {
+            $_SESSION['user'] = $_POST['user'];
 
         if (isset($_POST['user-remember']) && $_POST['user-remember'] == '1') {
             setcookie('user-remember', $_SESSION['user'], time() + (30 * 24 * 60 * 60), "/", "",false,false);
@@ -12,6 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             unset($_COOKIE['user-remember']);
             setcookie('user-remember', '', time() - 3600, "/");
         }
+        }else{
+            unset($_COOKIE['user-remember']);
+            setcookie('user-remember', '', time() - 3600, "/");
+            header("Location: ?action=login-failed");
+            exit();
+        }
+        
 
     }
 
@@ -50,7 +67,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && isset($_COOK
     <?php
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             if (isset($_GET['action']) && $_GET['action'] === 'login-failed') {
-                echo "<h1>Debes autenticarte primero</h1>";
+                echo "<h1>Debes autenticarte con un usuario válido</h1>";
             }
 
             if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && isset($_COOKIE['user-remember'])) {
@@ -69,11 +86,18 @@ if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && isset($_COOK
             <form action="" method="post">
                 <label for="user">Usuario</label>
                 <input type="text" name="user" id="user" required><br>
+                <label for="user">Password</label>
+                <input type="password" name="password" id="password" required><br>
                 <label>
                     <input type="checkbox" name="user-remember" value="1" <?php echo isset($_COOKIE['user-remember']) ? 'checked' : ''; ?>> Recordar Usuario
                 </label><br>
                 <input type="submit" value="Enviar">
             </form>
+            <ul>
+                <li>marc -> 1111</li>
+                <li>paula -> g4to</li>
+                <li>...</li>
+            </ul>
     <?php 
         } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['user'])) {
             echo "<h1>Bienvenido " . htmlspecialchars($_SESSION['user']) . "</h1>";
@@ -93,5 +117,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && isset($_COOK
     <?php 
         }
     ?>
+
+
 </body>
 </html>
