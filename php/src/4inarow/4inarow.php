@@ -7,6 +7,8 @@ include("./functions_4inarow.php");
 if(!isset($_SESSION['grid'])){
     $_SESSION['grid'] = initGrid();
     $_SESSION['player'] = 'player2';
+    $_SESSION['p1-points'] = 0;
+    $_SESSION['p2-points'] = 0;
 }
 
 $grid = $_SESSION['grid'];
@@ -85,7 +87,6 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . h
 
         if ($col < 0 || $col > 6 || ($player != 'player1' && $player != 'player2') || isColumnFull($grid,$col)) {
             echo "<p class=\"incorrect\">Has introducido valores inválidos</p>";
-            $_SESSION['player'] = ($player === 'player1')?'player2':'player1';
             $player = ($player === 'player1')?'player2':'player1';
 
 
@@ -115,6 +116,11 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . h
     printGrid($grid);
     if(checkFourInARow($grid)){
         echo "<h1>Has ganado $player</h1>";
+        if($player === 'player1'){
+            $_SESSION['p1-points'] += 2;
+        }else{
+            $_SESSION['p2-points'] += 2;
+        }
         $player = 'player2';
         $_SESSION['player'] = 'player2';
         $grid = initGrid();
@@ -122,6 +128,8 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . h
         echo "<h1>Empate</h1>";
         $player = 'player2';
         $_SESSION['player'] = 'player2';
+        $_SESSION['p1-points'] += 1;
+        $_SESSION['p2-points'] += 1;
         $grid = initGrid();
     }else{
         $player = ($player === 'player1')?'player2':'player1';
@@ -137,6 +145,8 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . h
 
     $_SESSION['grid'] = $grid;
     $_SESSION['player'] = $player;
+
+    echo "<h2>Player 1: " . $_SESSION['p1-points'] . " | Player 2: " . $_SESSION['p2-points'] . "</h2>"
 
     
     ?>
