@@ -47,11 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
 }
 
-$isCookieRemoved = false;
+$isCookie = false;
 
 if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && isset($_COOKIE['user-remember'])){
-    setcookie('user-remember', '', time() - 3600, "/");
-    $isCookieRemoved = true;
+    $isCookie = true;
 }
 
 ?>
@@ -62,32 +61,39 @@ if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && isset($_COOK
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
+    <section>
+
+    
     <?php
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             if (isset($_GET['action']) && $_GET['action'] === 'login-failed') {
                 echo "<h1>Debes autenticarte con un usuario válido</h1>";
             }
 
-            if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && $isCookieRemoved) {
+            if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && $isCookie) {
                 echo "<h1>Adiós " . $_COOKIE['user-remember'] ."</h1>";
-                echo "<p>Se eliminan las cookies y las sesiones</p>";
                 session_destroy();
             }elseif(isset($_GET['action']) && $_GET['action'] === 'login-closed' && isset($_SESSION['user'])){
                 echo "<h1>Adiós " . $_SESSION['user'] ."</h1>";
                 echo "<p>Se eliminan las sesiones</p>";
                 session_destroy();
+            }else{
+                if(isset($_COOKIE['user-remember'])) echo "<h1>Bienvenido de nuevo " . $_COOKIE['user-remember'] . "</h1>";
             }
 
 
-            if(isset($_COOKIE['user-remember'])) echo "<h1>Bienvenido de nuevo " . $_COOKIE['user-remember'] . "</h1>";
+            
     ?>
+    </section>
             <form action="" method="post">
-                <label for="user">Usuario</label>
-                <input type="text" name="user" id="user" required><br>
-                <label for="user">Password</label>
-                <input type="password" name="password" id="password" required><br>
+                <label for="user">Usuario
+                <input type="text" name="user" id="user" required></label><br>
+                <label for="user">Password
+                <input type="password" name="password" id="password" required></label><br>
                 <label>
                     <input type="checkbox" name="user-remember" value="1" <?php echo isset($_COOKIE['user-remember']) ? 'checked' : ''; ?>> Recordar Usuario
                 </label><br>
@@ -102,18 +108,20 @@ if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && isset($_COOK
         } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_SESSION['user'])) {
             echo "<h1>Bienvenido " . htmlspecialchars($_SESSION['user']) . "</h1>";
     ?>
-            <form action="" method="post">
-                <fieldset>
-                    <legend>Selecciona un juego</legend>
-                    <label for="hangman">
-                        <input type="radio" name="game" id="hangman" value="hangman"> Ahorcado
-                    </label>
-                    <label for="4inarow">
-                        <input type="radio" name="game" id="4inarow" value="4inarow"> 4 en ratlla
-                    </label>
-                    <input type="submit" value="Enviar">
-                </fieldset>
-            </form>
+    </section>
+    
+        <form action="" method="post">
+            <fieldset>
+                <legend>Selecciona un juego</legend>
+                <label for="hangman">
+                    <input type="radio" name="game" id="hangman" value="hangman"> Ahorcado
+                </label><br>
+                <label for="4inarow">
+                    <input type="radio" name="game" id="4inarow" value="4inarow"> 4 en ratlla
+                </label><br>
+                <input type="submit" value="Enviar">
+            </fieldset>
+        </form>
     <?php 
         }
     ?>

@@ -10,8 +10,20 @@ function initGrid()
     return $grid;
 }
 
-function printGrid($grid)
-{
+function printGrid($grid, $player)
+{   
+    if(($player === 'player1' || $grid == initGrid()) && !checkFourInARow($grid)) {
+    ?>
+    
+    <form id="colsform" action="" method="post">
+    <input type="number" name="col" id="col" style="display: none">
+    <?php 
+    for($i = 0; $i < count($grid[0]); $i++){
+        $temp = $i+1;
+        echo "<button data-value=\"$temp\">Columna $temp</button>";
+    }
+    echo "</form>";
+    }
     echo "<table>";
 
     foreach ($grid as $row) {
@@ -67,8 +79,10 @@ function checkFourInARow(&$grid)
         $counter = 0;
         $currentPlayer = 'buid';
         foreach ($row as $item) {
-            if ($item === 'buid')
-                continue;
+            if ($item === 'buid'){
+                $counter = 0;
+            }
+
 
             if ($item != $currentPlayer) {
                 $currentPlayer = $item;

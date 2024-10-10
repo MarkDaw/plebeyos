@@ -1,6 +1,6 @@
 <?php
 session_start();
-if(!isset($_SESSION['user']) && !isset($_COOKIE['user-remember'])){
+if(!isset($_SESSION['user'])){
     header('Location: ../login.php?action=login-failed');
 }
 include("./functions_4inarow.php");
@@ -15,7 +15,7 @@ $grid = $_SESSION['grid'];
 $col = -1;
 $player = $_SESSION['player'];
 
-$userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . htmlspecialchars($_COOKIE['user-remember']) . " mediante cookie</h1>":"<h1>Sesión del usuario " . htmlspecialchars($_SESSION['user']) . "</h1>";
+$userLogged = "<h1>Sesión del usuario " . htmlspecialchars($_SESSION['user']) . "</h1>";
 
 ?>
 
@@ -27,9 +27,17 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . h
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="script.js" defer></script>
     <style>
         table {
             border-collapse: collapse;
+        }
+
+        button{
+            width: 72px;
+            height: 50px;
+            display: inline-block;
+            margin: 10px;
         }
 
         td {
@@ -121,7 +129,7 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . h
     }
         
     
-    printGrid($grid);
+    printGrid($grid,$player);
     if(checkFourInARow($grid)){
         $player = ($player === 'player1')?'player2':'player1';
         if($player === 'player1'){
@@ -141,17 +149,8 @@ $userLogged = (isset($_COOKIE['user-remember']))? "<h1>Sesión del usuario " . h
         $_SESSION['p1-points'] += 1;
         $_SESSION['p2-points'] += 1;
         $grid = initGrid();
-    }elseif($player === 'player1'){
+    }elseif($player !== 'player1'){
         
-        echo "<p>Turno del jugador</p>";
-        ?>
-        <form action="" method="post">
-            <input type="number" name="col" id="col" autofocus>
-            
-            <input type="submit" value="Enviar">
-        </form>
-        <?php 
-    }else{
         echo "<p>Turno de la IA</p>";
         ?>
         <form action="" method="post">

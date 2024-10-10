@@ -1,0 +1,30 @@
+*{
+    box-sizing: border-box;
+}
+
+section, form, ul{
+    margin: 20px auto;
+    min-width: 700px;
+    width: 50%;
+    box-shadow: 0 0 0 5px #0000003b;
+    border-radius: 5px;
+    padding: 20px;
+
+
+}
+
+section{
+    background-color: rgb(248, 230, 230);
+    box-shadow: 0 0 0 5px #0000003b;
+    border-radius: 5px;
+}
+
+form{
+    background-color: rgb(255, 255, 255);
+}
+
+label,input[type="submit"], input[type="select"]{
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+}
