@@ -70,11 +70,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && isset($_COOK
                 echo "<h1>Debes autenticarte con un usuario válido</h1>";
             }
 
-            if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && isset($_COOKIE['user-remember'])) {
+            if (isset($_GET['action']) && $_GET['action'] === 'login-closed' && $isCookieRemoved) {
                 echo "<h1>Adiós " . $_COOKIE['user-remember'] ."</h1>";
                 echo "<p>Se eliminan las cookies y las sesiones</p>";
                 session_destroy();
-            }elseif($isCookieRemoved){
+            }elseif(isset($_GET['action']) && $_GET['action'] === 'login-closed' && isset($_SESSION['user'])){
                 echo "<h1>Adiós " . $_SESSION['user'] ."</h1>";
                 echo "<p>Se eliminan las sesiones</p>";
                 session_destroy();

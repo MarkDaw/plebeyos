@@ -65,10 +65,9 @@ function checkFourInARow(&$grid)
     $currentPlayer = 'buid';
     foreach ($grid as $row) {
         $counter = 0;
-
+        $currentPlayer = 'buid';
         foreach ($row as $item) {
             if ($item === 'buid')
-                $counter = 0;
                 continue;
 
             if ($item != $currentPlayer) {
