@@ -1,1 +1,1 @@
-docker container exec -it php composer update
+docker container exec -it php composer self-update
