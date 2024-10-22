@@ -4,13 +4,13 @@
     "license" : "MIT",
     "autoload": {
         "psr-4": {
-            "MML\\": "src/App"
+            "Joc4enRatlla\\": "App/"
         }
     },
     "authors": [
         {
-            "name": "igomis",
-            "email": "igomis@cipfpbatoi.es"
+            "name": "marc",
+            "email": "marmollil@alu.edu.gva.es"
         }
     ],
     "require-dev": {
