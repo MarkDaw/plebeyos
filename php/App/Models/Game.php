@@ -71,13 +71,19 @@ class Game
         $this->scores = $scores;
     }
 
+    public function addScore(int $key, int $value): void
+    {
+        $this->scores[$key] += $value;
+    }
+
     public function reset(): void{
         $this->board = new Board();
     } 
 
     public function play($column){
+        $result = $this->board->setMovementOnBoard($column, $this->nextPlayer);
         $this->nextPlayer = $this->nextPlayer === 1 ? 2 : 1;
-        $this->board->setMovementOnBoard($column, $this->nextPlayer);
+        return $result;
     }
 
     public function playAutomatic(){
@@ -120,7 +126,7 @@ class Game
         $this->play($inthemiddle);
     }
     public function save(){
-        $_SESSION['game'] = serialize($this);
+        return serialize($this);
     }  
 
     public static function restore(){

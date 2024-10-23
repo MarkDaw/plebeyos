@@ -20,48 +20,76 @@ private Game $game;
         
         $this->initGame($request);
 
-        $this->makeMove($request);
+        if(isset($_SESSION['scores'])){
+            $this->game->setScores($_SESSION['scores']);
+        }else{
+            $this->game->setScores([1 => 0, 2 => 0]);
+        }
 
+        if($this->game->getWinner() === null && !$this->game->getBoard()->isFull()){
+            $this->makeMove($request);
 
+            if($this->game->getWinner() !== null){
+                ($this->game->getPlayers()[1]=== $this->game->getWinner())? $this->game->addScore(1, 2) : $this->game->addScore(2, 2);
+            }elseif($this->game->getBoard()->isFull()){
+                $this->game->addScore(1, 1);
+                $this->game->addScore(2, 1);
+            }
+
+        }
+        
 
         $board = $this->game->getBoard();
         $players = $this->game->getPlayers();
         $winner = $this->game->getWinner();
         $scores = $this->game->getScores();
+        $nextPlayer = $this->game->getNextPlayer();
+
+        
 
         $_SESSION['game'] = $this->game->save();
+        $_SESSION['scores'] = [
+            1 => $scores[1],
+            2 => $scores[2]
+        ];
 
-        loadView('index',compact('board','players','winner','scores'));
+
+        loadView('joc',compact('board','players','winner','scores','nextPlayer'));
     }
 
 
     private function initGame(Array $request){
-        if(isset($request['reset'])){
-            unset($_SESSION['game']);
-            $jugador1 = new Player('Jugador 1', (isset($_COOKIE['color1']) ? $_COOKIE['color1'] : 'red'));
-            $jugador2 = new Player('Jugador 2', (isset($_COOKIE['color2']) ? $_COOKIE['color2'] : 'yellow'));
-            $this->game = new Game($jugador1, $jugador2);
-        }elseif(isset($_SESSION['game'])){
-            $this->game = Game::restore();
+
         
-        }elseif($this->game == null){
-            $jugador1 = new Player('Jugador 1', (isset($_COOKIE['color1']) ? $_COOKIE['color1'] : 'red'));
-            $jugador2 = new Player('Jugador 2', (isset($_COOKIE['color2']) ? $_COOKIE['color2'] : 'yellow'));
+        if(isset($_SESSION['game'])){
+            $this->game = Game::restore();
+        }else{
+            $jugador1 = new Player('Jugador 1', (isset($_POST['color1']) ? $_POST['color1'] : 'red'));
+            $jugador2 = new Player('Jugador 2', (isset($_POST['color2']) ? $_POST['color2'] : 'yellow'));
             $this->game = new Game($jugador1, $jugador2);
         }
     }
 
     private function makeMove(Array $request){
-        if(isset($request['column'])){
-            $column = $request['column'];
+        if(isset($request['col'])){
+            $column = $request['col'];
             
             if(!$this->game->getBoard()->isValidMove($column)){
                 if (!isset($_SESSION['errors'])) {
                     $_SESSION['errors'] = [];
                 }
                 $_SESSION['errors'][] = 'Columna plena';
+            }elseif($column < 0 || $column > Board::COLUMNS-1){
+                if (!isset($_SESSION['errors'])) {
+                    $_SESSION['errors'] = [];
+                }
+                $_SESSION['errors'][] = 'Columna no vàlida';
             }else{
-                $this->game->play($column);
+                $coords = $this->game->play($column);
+                if($this->game->getBoard()->checkWin($coords)){
+
+                    $this->game->setWinner($this->game->getPlayers()[($this->game->getNextPlayer() === 1)?2:1]);
+                }
             }
             
         }

@@ -65,12 +65,13 @@ class Board
      * @return array Devuelve el estado actualizado del tablero después del movimiento.
      */
     public function setMovementOnBoard(int $column, int $player): array {
-        $coords = [];
+        $coords = [$column, $player];
         for($i = self::ROWS - 1; $i >= 0; $i-- ){
             if($this->slots[$i][$column] !== 0) continue;
             $this->slots[$i][$column] = $player;
             $coords[0] = $i;
             $coords[1] = $column;
+            break;
         }
 
         return $coords;
@@ -136,10 +137,20 @@ class Board
      * @return bool Devuelve true si el movimiento es válido, de lo contrario false.
      */
     public function isValidMove(int $column): bool {
+
+        if($column < 0 || $column > self::COLUMNS-1) return false;
+
         for($i = self::ROWS - 1; $i >= 0; $i-- ){
             if($this->slots[$i][$column] !== 0) continue;
             return true;
         }
         return false;
+    }
+
+    public function isFull(): bool {
+        for($i = 0; $i < self::COLUMNS; $i++){
+            if($this->isValidMove($i)) return false;
+        }
+        return true;
     }
 }
