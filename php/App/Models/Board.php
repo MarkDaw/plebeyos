@@ -141,8 +141,8 @@ class Board
         if($column < 0 || $column > self::COLUMNS-1) return false;
 
         for($i = self::ROWS - 1; $i >= 0; $i-- ){
-            if($this->slots[$i][$column] !== 0) continue;
-            return true;
+            if($this->slots[$i][$column] === 0) return true;
+            
         }
         return false;
     }

@@ -89,42 +89,44 @@ class Game
     public function playAutomatic(){
         $opponent = $this->nextPlayer === 1 ? 2 : 1;
 
-        for ($col = 1; $col <= Board::COLUMNS; $col++) {
+        for ($col = 0; $col <= Board::COLUMNS-1; $col++) {
             if ($this->board->isValidMove($col)) {
                 $tempBoard = clone($this->board);
                 $coord = $tempBoard->setMovementOnBoard($col, $this->nextPlayer);
 
                 if ($tempBoard->checkWin($coord)) {
-                    $this->play($col);
-                    return;
+                    
+                    return $this->play($col);
                 }
             }
         }
 
-        for ($col = 1; $col <= Board::COLUMNS; $col++) {
+        for ($col = 0; $col <= Board::COLUMNS-1; $col++) {
             if ($this->board->isValidMove($col)) {
                 $tempBoard = clone($this->board);
                 $coord = $tempBoard->setMovementOnBoard($col, $opponent);
                 if ($tempBoard->checkWin($coord )) {
-                    $this->play($col);
-                    return;
+                    
+                    return $this->play($col);
                 }
             }
         }
 
         $possibles = array();
-        for ($col = 1; $col <= Board::COLUMNS; $col++) {
+        for ($col = 0; $col <= Board::COLUMNS-1; $col++) {
             if ($this->board->isValidMove($col)) {
                 $possibles[] = $col;
             }
         }
+        $random = 0;
         if (count($possibles)>2) {
             $random = rand(-1,1);
         }
         $middle = (int) (count($possibles) / 2)+$random;
         $inthemiddle = $possibles[$middle];
-        $this->play($inthemiddle);
+        return $this->play($inthemiddle);
     }
+
     public function save(){
         return serialize($this);
     }  

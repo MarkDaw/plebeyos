@@ -7,6 +7,13 @@ if($winner !== null){
     echo ($nextPlayer === 1)? "<h1>Ha guanyat el jugador" . $players[2]->getName() ."</h1>":"<h1>Ha guanyat " . $players[1]->getName() ."</h1>";
 }elseif($board->isFull()){  
     echo "<h1>Empat</h1>";
+}elseif($nextPlayer === 2 && $players[$nextPlayer]->getIsAutomatic()){
+    echo "<h1>Turno de la IA</h1>";
+    echo '<form id="colsform" action="" method="post">';
+    echo '<input type="number" name="col" id="col" style="display: none">';
+    echo "<button data-value=\"0\">Turno de la IA</button>";
+    echo "</form>";
+
 }else{
     echo ($players[$nextPlayer]->getIsAutomatic())?"<h1>Turno de la IA</h1>":"<h1>Turno del " . $players[$nextPlayer]->getName() ."</h1>";
     echo '<form id="colsform" action="" method="post">';

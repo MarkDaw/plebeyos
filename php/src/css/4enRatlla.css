@@ -76,10 +76,16 @@ td {
     background: #f1c40f;
 }
 
-.errors-container {
-    text-align: center;
-    color: #e74c3c;
-    margin: 10px 0;
+.errors-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 3rem;
+    border: solid 1px red;
+    width: 100%;
+    max-width: 600px;
+    padding: 1rem;
 }
 
 input[type="submit"] {

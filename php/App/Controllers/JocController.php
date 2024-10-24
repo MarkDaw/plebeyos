@@ -20,23 +20,9 @@ private Game $game;
         
         $this->initGame($request);
 
-        if(isset($_SESSION['scores'])){
-            $this->game->setScores($_SESSION['scores']);
-        }else{
-            $this->game->setScores([1 => 0, 2 => 0]);
-        }
+        $this->initScores();
 
-        if($this->game->getWinner() === null && !$this->game->getBoard()->isFull()){
-            $this->makeMove($request);
-
-            if($this->game->getWinner() !== null){
-                ($this->game->getPlayers()[1]=== $this->game->getWinner())? $this->game->addScore(1, 2) : $this->game->addScore(2, 2);
-            }elseif($this->game->getBoard()->isFull()){
-                $this->game->addScore(1, 1);
-                $this->game->addScore(2, 1);
-            }
-
-        }
+        $this->addScore($request);
         
 
         $board = $this->game->getBoard();
@@ -59,14 +45,26 @@ private Game $game;
 
 
     private function initGame(Array $request){
-
         
         if(isset($_SESSION['game'])){
             $this->game = Game::restore();
         }else{
-            $jugador1 = new Player('Jugador 1', (isset($_POST['color1']) ? $_POST['color1'] : 'red'));
-            $jugador2 = new Player('Jugador 2', (isset($_POST['color2']) ? $_POST['color2'] : 'yellow'));
+            $jugador1 = new Player('Jugador 1', 'red');
+            $jugador2 = new Player('Jugador 2', 'yellow');
+            if(isset($_SESSION['players'])){
+                $players = unserialize($_SESSION['players']);
+                $jugador1 = $players['player1'];
+                $jugador2 = $players['player2'];
+            }
             $this->game = new Game($jugador1, $jugador2);
+        }
+    }
+
+    private function initScores(){
+        if(isset($_SESSION['scores'])){
+            $this->game->setScores($_SESSION['scores']);
+        }else{
+            $this->game->setScores([1 => 0, 2 => 0]);
         }
     }
 
@@ -85,7 +83,12 @@ private Game $game;
                 }
                 $_SESSION['errors'][] = 'Columna no vàlida';
             }else{
-                $coords = $this->game->play($column);
+                $coords = [];
+                if($this->game->getPlayers()[2]->getIsAutomatic()){
+                    $coords = ($this->game->getNextPlayer() === 1)? $this->game->play($column): $this->game->playAutomatic();
+                }else{
+                    $coords = $this->game->play($column);
+                }
                 if($this->game->getBoard()->checkWin($coords)){
 
                     $this->game->setWinner($this->game->getPlayers()[($this->game->getNextPlayer() === 1)?2:1]);
@@ -94,6 +97,20 @@ private Game $game;
             
         }
     }
+
+    private function addScore($request){
+        if($this->game->getWinner() === null && !$this->game->getBoard()->isFull()){
+            $this->makeMove($request);
+
+            if($this->game->getWinner() !== null){
+                ($this->game->getPlayers()[1]=== $this->game->getWinner())? $this->game->addScore(1, 2) : $this->game->addScore(2, 2);
+            }elseif($this->game->getBoard()->isFull()){
+                $this->game->addScore(1, 1);
+                $this->game->addScore(2, 1);
+            }
+
+        }
+    } 
 
 
 
