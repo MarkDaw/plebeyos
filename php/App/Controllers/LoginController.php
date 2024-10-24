@@ -3,6 +3,7 @@
 namespace Joc4enRatlla\Controllers;
 
 use Joc4enRatlla\Services\Service;
+use Joc4enRatlla\Exceptions\InvalidPostException; // Add this line to import the exception class
 
 
 
@@ -15,8 +16,12 @@ class LoginController {
     ];
 
     public function __construct($request=null){
-
-    $this->setUser($request);
+    try {
+        $this->setUser($request);
+    } catch (\Throwable $th) {
+        loadView('login'); 
+        return;
+    }
 
     }
 
@@ -28,12 +33,7 @@ class LoginController {
         }
 
         if(!isset($request['user']) || !isset($request['password']) || empty($request['user']) || empty($request['password'])){
-            if (!isset($_SESSION['errors'])) {
-                $_SESSION['errors'] = [];
-            }
-            $_SESSION['errors'][] = 'Error en el envío del formulari';
-            loadView('login');
-            return;
+            throw new InvalidPostException('Error en el envío del formulari, falten dades o estan buides');
         }
        
         if (!array_key_exists($request['user'], self::VALID_USERS)) {

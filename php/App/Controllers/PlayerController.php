@@ -4,15 +4,20 @@ namespace Joc4enRatlla\Controllers;
 
 use Joc4enRatlla\Models\Player;
 use Joc4enRatlla\Services\Service;
-
-
+use Joc4enRatlla\Exceptions\InvalidPostException;
+use Joc4enRatlla\Exceptions\SameValueException;
 
 class PlayerController {
 private Array $players;
 
     public function __construct($request=null){
-
-    $this->setPlayers($request);
+    try {
+        $this->setPlayers($request);
+    } catch (\Throwable $th) {
+        loadView('player'); 
+        return;
+    }
+    
 
     }
 
@@ -24,39 +29,19 @@ private Array $players;
         
 
         if(!isset($request['player_name1']) || !isset($request['player_name2']) || !isset($request['player_color1']) || !isset($request['player_color2'])){
-            if (!isset($_SESSION['errors'])) {
-                $_SESSION['errors'] = [];
-            }
-            $_SESSION['errors'][] = 'Error en el envío del formulari1';
-            loadView('player');
-            return;
+            throw new InvalidPostException('Error en el envío del formulari, falten dades');
         }
 
         if(empty($request['player_name1']) || empty($request['player_name2']) || empty($request['player_color1']) || empty($request['player_color2'])){
-            if (!isset($_SESSION['errors'])) {
-                $_SESSION['errors'] = [];
-            }
-            $_SESSION['errors'][] = 'Error en el envío del formulari2';
-            loadView('player');
-            return;
+            throw new InvalidPostException('Error en el envío del formulari, falten dades o estan buides');
         }
 
         if($request['player_color1'] === $request['player_color2']){
-            if (!isset($_SESSION['errors'])) {
-                $_SESSION['errors'] = [];
-            }
-            $_SESSION['errors'][] = 'Els colors dels jugadors han de ser diferents';
-            loadView('player');
-            return;
+            throw new SameValueException('Els colors dels jugadors han de ser diferents');
         }
 
         if($request['player_name1'] === $request['player_name2']){
-            if (!isset($_SESSION['errors'])) {
-                $_SESSION['errors'] = [];
-            }
-            $_SESSION['errors'][] = 'Els noms dels jugadors han de ser diferents';
-            loadView('player');
-            return;
+            throw new SameValueException('Els noms dels jugadors han de ser diferents');
         }
 
 
